@@ -1,0 +1,59 @@
+library(lpSolve)
+edgeNames = c("qA",
+              "qB",
+              "qD",
+              
+              "rC",
+              "rE",
+              "rF",
+              
+              "sA",
+              "sC",
+              "sG",
+
+              "tB",
+              "tD",
+
+              "uC",
+              "uF",
+
+              "vA",
+              "vF",
+
+              "wD",
+              "wE",
+              "wG")
+
+preferences = c(57,87,75,
+                96,55,85,
+                48,74,64,
+                70,81,
+                60,26,
+                95,60,
+                90,75,88)
+
+names(preferences) = edgeNames
+from = substring(edgeNames,1,1)
+to = substring(edgeNames,2,2)
+positions=unique(from)
+workers=unique(to)
+
+A1 = matrix(as.numeric(sapply(positions, function(p){from==p})),
+            ncol=length(edgeNames),
+            byrow=T)
+row.names(A1)=positions
+A2 = matrix(as.numeric(sapply(workers, function(w){to==w})),
+            ncol=length(edgeNames),
+            byrow=T,
+            )
+row.names(A2)=workers
+
+A = rbind(A1,A2)
+colnames(A) = edgeNames
+
+b = rep(1,dim(A)[1])
+dir = rep("=",dim(A)[1])
+c = preferences
+
+sol = lp("max", c, A, dir, b)
+edgeNames[round(sol$solution)==1]
