@@ -51,8 +51,6 @@ A = t(apply(ends(G,E(G)), 1, function(x){v=rep(0, n);v[x]=1;v}))
 dir = rep(">=",m)
 b = rep(1,m)
 
-A
-
 optSol=lp(direction="min",
        objective.in=c,
        const.mat=A,
