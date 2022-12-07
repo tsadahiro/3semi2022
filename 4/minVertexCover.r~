@@ -1,0 +1,16 @@
+library(igraph)
+library(lpSolve)
+
+G = make_lattice(c(5,5))
+plot(G)
+
+n=length(V(G))
+m=length(E(G))
+c = rep(1, n)
+A = apply(ends(G,E(G)), 1, function(x){v=rep(0, n);v[x]=1;v})
+dir = rep(">=",m)
+b = rep(1,m)
+
+sol=lp("min",
+       c, A, dir, b)
+

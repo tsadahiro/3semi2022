@@ -1,0 +1,86 @@
+---
+title: "第３回目"
+author: "貞廣泰造"
+format: html
+---
+
+## 最小頂点被覆
+
+
+
+```{r, echo=T,warning=F,message=F}
+library(igraph)
+library(lpSolve)
+
+G = make_lattice(c(6,6))
+#rglplot(G,layout=layout.kamada.kawai(G,dim=3))
+plot(G,layout=layout.kamada.kawai(G,dim=2))
+
+n=length(V(G))
+m=length(E(G))
+c = rep(1, n)
+A = t(apply(ends(G,E(G)), 1, function(x){v=rep(0, n);v[x]=1;v}))
+dir = rep(">=",m)
+b = rep(1,m)
+
+sol=lp("min",
+       c, A, dir, b)
+
+pal=c("pink","cyan")
+plot(G,
+     layout=layout.kamada.kawai(G,dim=2),
+     vertex.color=pal[sol$solution+1])
+
+```
+
+```{r, echo=T,warning=F,message=F}
+library(igraph)
+library(lpSolve)
+
+#G = make_lattice(c(3,3,3))
+G = erdos.renyi.game(40,0.05)
+layout = layout.kamada.kawai(G,dim=2)
+plot(G, layout=layout)
+#rglplot(G,layout=layout.kamada.kawai(G,dim=3))
+
+
+n=length(V(G))
+m=length(E(G))
+c = rep(1, n)
+A = t(apply(ends(G,E(G)), 1, function(x){v=rep(0, n);v[x]=1;v}))
+dir = rep(">=",m)
+b = rep(1,m)
+
+A
+
+optSol=lp(direction="min",
+       objective.in=c,
+       const.mat=A,
+       const.dir=dir,
+       const.rhs=b,
+       int.vec=1:n)
+
+apprSol=lp(direction="min",
+       objective.in=c,
+       const.mat=A,
+       const.dir=dir,
+       const.rhs=b)
+
+pal=c("pink","cyan")
+
+# 厳密解（最適解）
+optSol
+optSol$solution
+plot(G,
+     layout=layout,
+     vertex.color=pal[round(optSol$solution)+1])
+
+# 近似解
+sum(as.numeric(apprSol$solution>=0.5))
+apprSol$solution
+plot(G,
+     layout=layout,
+     vertex.color=pal[as.numeric(apprSol$solution>=0.5)+1])
+
+```
+
