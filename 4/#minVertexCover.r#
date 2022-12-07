@@ -3,7 +3,7 @@ library(lpSolve)
 
 #G = make_lattice(c(3,3,3))
 #G = erdos.renyi.game(40,0.05)
-G = sample_k_regular(20,3)
+G = sample_k_regular(100,3)
 layout = layout.kamada.kawai(G,dim=2)
 plot(G, layout=layout)
 #rglplot(G,layout=layout.kamada.kawai(G,dim=3))
