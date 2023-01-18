@@ -1,0 +1,4 @@
+
+idx = function(i,j,d){
+  4*4*i + 4*j + d
+}

@@ -1,0 +1,98 @@
+
+idx = function(i,j,d){
+  9*9*i + 9*j + d
+}
+
+A=c()
+# cell constraints
+for (i in 0:8){
+  for (j in 0:8){
+    row = rep(0,9^3)
+    for (d in 1:9){
+      row[idx(i,j,d)]=1
+    }
+    A = rbind(A,row)
+  }
+}
+
+# row constraints
+for (i in 0:8){
+  for (d in 1:9){
+    row = rep(0,9^3)
+    for (j in 0:8){
+      row[idx(i,j,d)]=1
+    }
+    A = rbind(A,row)
+  }
+}
+# column constraints
+
+for (j in 0:8){
+  for (d in 1:9){
+    row = rep(0,9^3)
+    for (i in 0:8){
+      row[idx(i,j,d)]=1
+    }
+    A = rbind(A,row)
+  }
+}
+
+# block constraints
+for (bi in 0:2){
+    for (bj in 0:2){
+        for (d in 1:9){
+            row = rep(0,9^3)
+            for (i in 0:2){
+                for (j in 0:2){
+                    row[idx(3*bi+i,3*bj+j,d)]=1
+                }
+            }
+            A=rbind(A,row)
+        }
+    }
+}
+
+A = rbind(A, diag(rep(1,9^3)))
+A = rbind(A, diag(rep(1,9^3)))
+
+setCoef = function(i,j,d){
+    row = rep(0,9^3)
+    row[idx(i,j,d)]=1
+    A <<- rbind(A, row)
+}
+
+setCoef(2,0,5)
+setCoef(3,0,9)
+setCoef(4,0,6)
+setCoef(8,1,9)
+setCoef(0,2,3)
+setCoef(5,2,5)
+setCoef(6,2,4)
+setCoef(7,2,8)
+setCoef(8,2,7)
+setCoef(0,3,8)
+setCoef(4,3,7)
+setCoef(0,4,9)
+setCoef(1,4,7)
+setCoef(5,4,8)
+setCoef(7,4,1)
+setCoef(3,5,5)
+setCoef(7,5,9)
+setCoef(0,6,1)
+setCoef(1,6,9)
+setCoef(2,6,7)
+setCoef(5,7,7)
+setCoef(6,7,5)
+setCoef(2,8,2)
+setCoef(8,8,4)
+
+image(A)
+
+library(lpSolve)
+c = rep(1,9^3)
+dir = c(rep("=",9^2*4), rep(">=",9^3), rep("<=",9^3), rep("==",24))
+b = c(rep(1,9^2*4), rep(0,9^3), rep(1,9^3), rep(1,24))
+sol = lp("min", c, A, dir, b, int.vec=1:9^3)
+
+digits=rep(1:9,9^2)
+matrix(digits[round(sol$solution)==1],nrow=9)
